@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-access-controller-webhook-deployment
+  namespace: admission-webhook-ns
+  labels:
+    app: gpu-access-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gpu-access-controller
+  template:
+    metadata:
+      labels:
+        app: gpu-access-controller
+    spec:
+      containers:
+        - name: gpu-access-controller
+          image: ${IMAGE_REPO}/gpu-access-controller:latest
+          imagePullPolicy: Always
+          args:
+          - -webhookserverCfgFile=/etc/webhook/config/webhookserverconfig.yaml
+          - -tlsCertFile=/etc/webhook/certs/cert.pem
+          - -tlsKeyFile=/etc/webhook/certs/key.pem
+          - -alsologtostderr
+          - -v=4
+          - 2>&1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          volumeMounts:
+          - name: webhook-certs
+            mountPath: /etc/webhook/certs
+            readOnly: true
+          - name: webhook-config
+            mountPath: /etc/webhook/config
+      volumes:
+      - name: webhook-certs
+        secret:
+          secretName: gpu-access-controller-webhook-certs
+      - name: webhook-config
+        configMap:
+          name: gpu-access-controller-webhook-configmap

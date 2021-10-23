@@ -1,0 +1,21 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: gpu-access-controller-webhook-cfg
+  labels:
+    app: gpu-access-controller
+webhooks:
+# Using a full qualified string for `name` as per the doc, although it doesn't seem to be used by the system at all.
+# cf. https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#mutatingwebhook-v1-admissionregistration-k8s-io
+- name: gpu-access-controller.yuichi.com
+  clientConfig:
+    service:
+      name: gpu-access-controller-webhook-svc
+      namespace: admission-webhook-ns
+      path: "/mutate"
+    caBundle: ${CA_BUNDLE}
+  rules:
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]

@@ -1,0 +1,2 @@
+manifests/mutatingwebhook-ca-bundle.yaml
+manifests/deployment.yaml

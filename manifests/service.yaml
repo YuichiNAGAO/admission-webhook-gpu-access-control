@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-access-controller-webhook-svc
+  namespace: admission-webhook-ns
+  labels:
+    app: gpu-access-controller
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+  selector:
+    app: gpu-access-controller
