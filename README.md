@@ -10,7 +10,7 @@ Issue: https://github.com/NVIDIA/k8s-device-plugin/issues/61
 
 ### How to use
 
-Go to a server where you can run `kubectl` and run the follwoing command.
+Please run the following commend where `kubectl` is enabled. 
 `image resistory` is something like `docker.io/<user name>`.
 
 ```
